@@ -18,7 +18,8 @@ class Role(models.Model):
         verbose_name_plural = 'Roles'
 
 class CustomUser(AbstractUser):
-    # username, email, password, first_name, last_name, etc. are already here
+    # username, password, first_name, last_name, etc. are already here
+    email = models.EmailField(unique=True)
     phone      = models.CharField(max_length=15, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     document   = models.CharField(max_length=50, blank=True, null=True)
