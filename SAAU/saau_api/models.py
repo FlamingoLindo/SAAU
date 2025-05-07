@@ -40,9 +40,9 @@ class Role(models.Model):
 class CustomUser(AbstractUser):
     # username, password, first_name, last_name, etc. are already here
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15, blank=False, null=False)
+    phone = models.CharField(max_length=15, blank=False, null=False, unique=True)
     birth_date = models.DateField(blank=False, null=False)
-    document = models.CharField(max_length=50, blank=False, null=False)
+    document = models.CharField(max_length=50, blank=False, null=False, unique=True)
     role = models.ForeignKey(Role,
                              on_delete=models.CASCADE,
                              default=1, 

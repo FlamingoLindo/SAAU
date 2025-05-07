@@ -38,7 +38,7 @@ def create_user(request):
             user.is_superuser = True
             user.is_staff = True
             user.save()
-            logging.warning("Usuario master criado com sucesso: '%s'" % user.id)
+            logging.critical("Usuario master criado com sucesso: '%s'" % user.id)
 
         refresh = RefreshToken.for_user(user)
 

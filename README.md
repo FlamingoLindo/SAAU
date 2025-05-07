@@ -36,20 +36,21 @@ pip install -r requirements.txt
 
 ```ini
 Django==5.2
+python-decouple==3.8
 djangorestframework==3.16.0
 djangorestframework-simplejwt==5.5.0
-python-decouple==3.8
 PyJWT==2.9.0
+django-ratelimit==4.1.0
 ```
 
 ## Endpoints da API
 
 | Método | Rota                          | Descrição                              | Autenticação |
 | ------ | ----------------------------- | -------------------------------------- | ------------ |
-| POST   | `/api/`              | ...         | ❌|
-| GET    | `/api/`              | ...         | ✅|
-| GET    | `/api/`              | ...         | ✅|
-| DELETE | `/api/`              | ...         | ✅|
+| POST   | `/api/users/create/`              | Usada para a criação de um usuário         | ❌|
+| POST    | `/api/role/create/`              | Usada para a criação de um papel         | ✅|
+| POST    | `/api/login/`              | Usada para realizar o login de um usuário no sistema         | ❌|
+| ... | `/api/`              | ...         | ✅|
 
 ## Autenticação
 
@@ -62,7 +63,7 @@ O sistema utiliza um modelo relacional baseado nas entidades:
 
 - **User**: dados pessoais como nome, e-mail, CPF, senha (hash), data de nascimento, etc.
 
-- **Role**: define o papel do usuário no sistema, como admin ou cliente.
+- **Role**: define o papel do usuário no sistema, como *master* ou *cliente*.
 
 - **Address**: armazena endereço do usuário, opcional no cadastro.
 
