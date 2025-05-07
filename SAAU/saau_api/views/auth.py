@@ -9,6 +9,9 @@ from ..serializer import UserSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+import logging
+import logging_config
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -16,7 +19,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add custom claims
         token['name'] = user.name
-        # ...
+        token['role'] = user.role.name
 
         return token
     
@@ -33,13 +36,16 @@ def create_user(request):
             user.is_superuser = True
             user.is_staff = True
             user.save()
+            logging.warning("Usuario master criado com sucesso: '%s'" % user.id)
 
         refresh = RefreshToken.for_user(user)
 
+        logging.info("Usuario criado com sucesso no sistema: '%s'" % user.id)
         return Response({
             "user": serializer.data
         }, status=status.HTTP_201_CREATED)
 
+    logging.warning("Erro ao criar usuario'%s'" % list(serializer.errors.keys()))
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -48,19 +54,25 @@ def login(request):
     try:
         user = CustomUser.objects.get(email=request.data['email'])
     except CustomUser.DoesNotExist:
-        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        logging.warning("Erro ao fazer login: '%s'" % user.id)
+        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
     if user.check_password(request.data['password']):
-        if user.is_active == False:
+        if not user.is_active:
+            logging.warning("Tentativa de login com conta desativada: '%s'" % user.id)
             return Response({"error": "Conta desativada."}, status=status.HTTP_403_FORBIDDEN)
+        
         user.last_login = timezone.now()
         user.save(update_fields=['last_login'])
         
         refresh = RefreshToken.for_user(user)
+        logging.warning("Usuario logado com sucesso no sistema: '%s'" % user.id)
         return Response({
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": UserSerializer(user).data
         }, status=status.HTTP_200_OK)
-
-    return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+    
+        
+    logging.warning("Tentativa de fazer login com credencias incorretas: '%s'" % user.id)
+    return Response({"error": "Credenciais incorretas."}, status=status.HTTP_401_UNAUTHORIZED)
