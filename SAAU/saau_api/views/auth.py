@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
 
 import uuid
-from sensitive_info.models import CPFToken
+from sensitive_info.models import CPFToken, EmailToken, PhoneToken, BirthDateToken
 
 import logging
 import logging_config
@@ -35,22 +35,35 @@ class MyTokenObtainPairView(TokenObtainPairView):
 def create_user(request):
     serializer = UserSerializer(data=request.data)
     if not serializer.is_valid():
-        logging.warning("Erro ao criar usuário: %s", serializer.errors)
+        logging.warning("Erro ao criar usuario: %s", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # 1) copie os dados validados
     data = serializer.validated_data.copy()
 
-    # 2) retire o CPF real e gere o token
-    cpf_real = data.pop('document')
-    token = uuid.uuid4()
-    CPFToken.objects.using('sensitive').create(
-        token=token,
-        cpf_real=cpf_real
-    )
+    # —––– pseudonimização do CPF
+    cpf_real  = data.pop('document')
+    cpf_token = uuid.uuid4()
+    CPFToken.objects.using('sensitive').create(token=cpf_token, cpf_real=cpf_real)
+    data['document'] = str(cpf_token)
 
-    # 3) substitua no dict pelo token
-    data['document'] = str(token)
+    # —––– pseudonimização do E-mail
+    email_real  = data.pop('email')
+    email_token = uuid.uuid4()
+    EmailToken.objects.using('sensitive').create(token=email_token, email_real=email_real)
+    data['email'] = str(email_token)
+
+    # —––– pseudonimização do Telefone
+    phone_real  = data.pop('phone')
+    phone_token = uuid.uuid4()
+    PhoneToken.objects.using('sensitive').create(token=phone_token, phone_real=phone_real)
+    data['phone'] = str(phone_token)
+
+    # —––– pseudonimização da Data de Nascimento
+    bd_real    = data.pop('birth_date')
+    bd_token   = uuid.uuid4()
+    BirthDateToken.objects.using('sensitive').create(token=bd_token, birth_date_real=bd_real)
+    data['birth_date'] = str(bd_token)
 
     # 4) crie o usuário (fazendo set_password manualmente)
     password = data.pop('password')
@@ -63,15 +76,13 @@ def create_user(request):
         user.is_superuser = True
         user.is_staff     = True
         user.save(update_fields=['is_superuser', 'is_staff'])
-        logging.critical("Usuário master criado: %s", user.id)
+        logging.critical("Usuario master criado: %s", user.id)
 
     # 6) emita o JWT e retorne
     refresh = RefreshToken.for_user(user)
-    logging.info("Usuário criado com sucesso: %s", user.id)
+    logging.info("Usuario criado com sucesso: %s", user.id)
     return Response({
-        "user": UserSerializer(user).data,
-        "refresh": str(refresh),
-        "access":  str(refresh.access_token),
+        "user": UserSerializer(user).data
     }, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
