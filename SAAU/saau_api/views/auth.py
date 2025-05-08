@@ -76,11 +76,11 @@ def create_user(request):
         user.is_superuser = True
         user.is_staff     = True
         user.save(update_fields=['is_superuser', 'is_staff'])
-        logging.critical("Usuario master criado: %s", user.id)
+        #logging.critical("Usuario master criado: %s", user.id)
 
     # 6) emita o JWT e retorne
     refresh = RefreshToken.for_user(user)
-    logging.info("Usuario criado com sucesso: %s", user.id)
+    #logging.info("Usuario criado com sucesso: %s", user.id)
     return Response({
         "user": UserSerializer(user).data
     }, status=status.HTTP_201_CREATED)
@@ -89,31 +89,44 @@ def create_user(request):
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
 def login(request):
-    try:
-        user = CustomUser.objects.get(email=request.data['email'])
-    except CustomUser.DoesNotExist:
-        logging.warning("Erro ao fazer login: '%s'" % user.id)
-        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+    raw_email = request.data.get('email')
+    password  = request.data.get('password')
 
-    if user.check_password(request.data['password']):
-        if not user.is_active:
-            logging.warning("Tentativa de login com conta desativada: '%s'" % user.id)
-            return Response({"error": "Conta desativada."}, status=status.HTTP_403_FORBIDDEN)
-        
-        user.last_login = timezone.now()
-        user.save(update_fields=['last_login'])
-        
-        refresh = RefreshToken.for_user(user)
-        logging.warning("Usuario logado com sucesso no sistema: '%s'" % user.id)
-        return Response({
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-            "user": UserSerializer(user).data
-        }, status=status.HTTP_200_OK)
-    
-        
-    logging.warning("Tentativa de fazer login com credencias incorretas: '%s'" % user.id)
-    return Response({"error": "Credenciais incorretas."}, status=status.HTTP_401_UNAUTHORIZED)
+    # 1) pega o token equivalente
+    try:
+        mapping = EmailToken.objects.using('sensitive').get(email_real=raw_email)
+    except EmailToken.DoesNotExist:
+        return Response({"error": "Usuário não encontrado."},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    # 2) busca o CustomUser pelo token
+    try:
+        user = CustomUser.objects.get(email=str(mapping.token))
+    except CustomUser.DoesNotExist:
+        return Response({"error": "Usuário não encontrado."},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    # 3) valida senha e ativa
+    if not user.check_password(password):
+        logging.warning("Tentativa de login com credenciais incorretas: %s", raw_email)
+        return Response({"error": "Credenciais incorretas."},
+                        status=status.HTTP_401_UNAUTHORIZED)
+
+    if not user.is_active:
+        return Response({"error": "Conta desativada."},
+                        status=status.HTTP_403_FORBIDDEN)
+
+    # 4) login OK: atualiza last_login e emite tokens
+    user.last_login = timezone.now()
+    user.save(update_fields=['last_login'])
+
+    refresh = RefreshToken.for_user(user)
+    logging.info("Usuário logado com sucesso: %s", user.id)
+    return Response({
+        "refresh": str(refresh),
+        "access":  str(refresh.access_token),
+        "user":    UserSerializer(user).data
+    }, status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -123,18 +136,18 @@ def reset_password(request):
     try:
         user = CustomUser.objects.get(email=request.data['email'])
     except CustomUser.DoesNotExist:
-        logging.warning("Erro ao fazer reset de senha: '%s'" % id)
+       # logging.warning("Erro ao fazer reset de senha: '%s'" % id)
         return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
     if user.check_password(request.data['old_password']):
         if request.data['new_password'] != request.data['confirm_password']:
-            logging.warning("Tentativa de fazer reset de senha com senhas diferentes: '%s'" % user.id)
+           # logging.warning("Tentativa de fazer reset de senha com senhas diferentes: '%s'" % user.id)
             return Response({"error": "As senhas não coincidem."}, status=status.HTTP_400_BAD_REQUEST)
         
         user.set_password(request.data['new_password'])
         user.save()
-        logging.info("Senha alterada com sucesso: '%s'" % user.id)
+        #logging.info("Senha alterada com sucesso: '%s'" % user.id)
         return Response({"message": "Senha alterada com sucesso."}, status=status.HTTP_200_OK)
 
-    logging.warning("Tentativa de fazer reset de senha com credencias incorretas: '%s'" % user.id)
+    #logging.warning("Tentativa de fazer reset de senha com credencias incorretas: '%s'" % user.id)
     return Response({"error": "Credenciais incorretas."}, status=status.HTTP_401_UNAUTHORIZED)
