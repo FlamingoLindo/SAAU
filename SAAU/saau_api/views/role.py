@@ -1,15 +1,12 @@
-from django.shortcuts import get_object_or_404
-from django.db.models import Avg
 from rest_framework.decorators import api_view, permission_classes
 from ..permissions import IsStaffUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Role
 from ..serializer import RoleSerializer
 
 @api_view(['POST'])
-#@permission_classes([IsAuthenticated, IsStaffUser])
+@permission_classes([IsAuthenticated, IsStaffUser])
 def create_role(request):
     serializer = RoleSerializer(data=request.data)
     if serializer.is_valid():

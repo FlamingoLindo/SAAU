@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
+# ENTIDADE PERMISSÃO
 class Permission(models.Model):
     codename = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=200)
@@ -16,7 +16,7 @@ class Permission(models.Model):
         verbose_name = 'Permission'
         verbose_name_plural = 'Permissions'
 
-
+# ENTIDADE ROLE
 class Role(models.Model):
     id_role = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
@@ -36,12 +36,11 @@ class Role(models.Model):
         verbose_name = 'Role'
         verbose_name_plural = 'Roles'
 
-
+# ENTIDADE USUÁRIO
 class CustomUser(AbstractUser):
-    # username, password, first_name, last_name, etc. are already here
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=False, null=False, unique=True)
-    birth_date = models.CharField(blank=False, null=False)
+    birth_date = models.CharField(blank=False, null=False, max_length=10)
     document = models.CharField(max_length=50, blank=False, null=False, unique=True)
     role = models.ForeignKey(Role,
                              on_delete=models.CASCADE,
@@ -59,6 +58,7 @@ class CustomUser(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
+# ENTIDADE ENDEREÇO
 class Address(models.Model):
     id_address = models.AutoField(primary_key=True)
     street = models.CharField(max_length=100, blank=False, null=False)

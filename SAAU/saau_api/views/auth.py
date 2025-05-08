@@ -41,25 +41,25 @@ def create_user(request):
     # 1) copie os dados validados
     data = serializer.validated_data.copy()
 
-    # —––– pseudonimização do CPF
+    #  pseudonimização do CPF
     cpf_real  = data.pop('document')
     cpf_token = uuid.uuid4()
     CPFToken.objects.using('sensitive').create(token=cpf_token, cpf_real=cpf_real)
     data['document'] = str(cpf_token)
 
-    # —––– pseudonimização do E-mail
+    #  pseudonimização do E-mail
     email_real  = data.pop('email')
     email_token = uuid.uuid4()
     EmailToken.objects.using('sensitive').create(token=email_token, email_real=email_real)
     data['email'] = str(email_token)
 
-    # —––– pseudonimização do Telefone
+    #  pseudonimização do Telefone
     phone_real  = data.pop('phone')
     phone_token = uuid.uuid4()
     PhoneToken.objects.using('sensitive').create(token=phone_token, phone_real=phone_real)
     data['phone'] = str(phone_token)
 
-    # —––– pseudonimização da Data de Nascimento
+    #  pseudonimização da Data de Nascimento
     bd_real    = data.pop('birth_date')
     bd_token   = uuid.uuid4()
     BirthDateToken.objects.using('sensitive').create(token=bd_token, birth_date_real=bd_real)
@@ -76,11 +76,9 @@ def create_user(request):
         user.is_superuser = True
         user.is_staff     = True
         user.save(update_fields=['is_superuser', 'is_staff'])
-        #logging.critical("Usuario master criado: %s", user.id)
+        logging.critical("Usuario master criado: %s", user.id)
 
-    # 6) emita o JWT e retorne
-    refresh = RefreshToken.for_user(user)
-    #logging.info("Usuario criado com sucesso: %s", user.id)
+    logging.info("Usuario criado com sucesso: %s", user.id)
     return Response({
         "user": UserSerializer(user).data
     }, status=status.HTTP_201_CREATED)
@@ -136,18 +134,18 @@ def reset_password(request):
     try:
         user = CustomUser.objects.get(email=request.data['email'])
     except CustomUser.DoesNotExist:
-       # logging.warning("Erro ao fazer reset de senha: '%s'" % id)
+        logging.warning("Erro ao fazer reset de senha: '%s'" % id)
         return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
     if user.check_password(request.data['old_password']):
         if request.data['new_password'] != request.data['confirm_password']:
-           # logging.warning("Tentativa de fazer reset de senha com senhas diferentes: '%s'" % user.id)
+            logging.warning("Tentativa de fazer reset de senha com senhas diferentes: '%s'" % user.id)
             return Response({"error": "As senhas não coincidem."}, status=status.HTTP_400_BAD_REQUEST)
         
         user.set_password(request.data['new_password'])
         user.save()
-        #logging.info("Senha alterada com sucesso: '%s'" % user.id)
+        logging.info("Senha alterada com sucesso: '%s'" % user.id)
         return Response({"message": "Senha alterada com sucesso."}, status=status.HTTP_200_OK)
 
-    #logging.warning("Tentativa de fazer reset de senha com credencias incorretas: '%s'" % user.id)
+    logging.warning("Tentativa de fazer reset de senha com credencias incorretas: '%s'" % user.id)
     return Response({"error": "Credenciais incorretas."}, status=status.HTTP_401_UNAUTHORIZED)

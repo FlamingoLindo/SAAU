@@ -3,15 +3,20 @@ from .models import Role, CustomUser, Address
 
 from sensitive_info.models import CPFToken, EmailToken, PhoneToken, BirthDateToken
 
-
+# ROLE
 class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
         fields = '__all__'
 
+# USER
 class UserSerializer(serializers.ModelSerializer):
-
+    role = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Role.objects.all()
+    )
+    
     def validate(self, attrs):
         if (
             EmailToken.objects.using('sensitive') \
@@ -33,7 +38,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username', 'password', 'birth_date', 'document', 'phone', 'is_staff', 'is_active']
+        fields = ['id', 'email', 'username', 'password', 'birth_date', 
+                  'role', 'document', 'phone', 'is_staff', 'is_active']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -43,6 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+# USER RETURN DATA
 class UserReadSerializer(serializers.ModelSerializer):
     email      = serializers.SerializerMethodField()
     document   = serializers.SerializerMethodField()
@@ -85,6 +92,7 @@ class UserReadSerializer(serializers.ModelSerializer):
         s = real.strftime("%d/%m/%Y")
         return f"**/{s[3:]}"
 
+# ADDRESS
 class AddressSerializer(serializers.ModelSerializer):
 
     class Meta:

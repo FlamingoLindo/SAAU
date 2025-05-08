@@ -1,5 +1,13 @@
+"""
+Database Router para separar dados sensíveis do app `sensitive_info`:
+
+- Modelos do app `sensitive_info` --> banco de dados “sensitive”
+- Todos os outros modelos --> banco de dados “default”
+- Impede relações cruzadas entre esses dois bancos
+- Controla em qual conexão cada migração deve ser aplicada
+"""
+
 class SensitiveDataRouter:
-    """Roteia o app sensitive_info para o DB 'sensitive' e todo o resto para 'default'."""
     sensitive_apps = {'sensitive_info'}
 
     def db_for_read(self, model, **hints):

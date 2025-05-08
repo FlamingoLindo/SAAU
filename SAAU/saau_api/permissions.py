@@ -1,3 +1,7 @@
+"""
+    Permissão customizada que só deixa passar requisições de usuários staff.
+"""
+
 from rest_framework.permissions import BasePermission
 
 class IsStaffUser(BasePermission):
