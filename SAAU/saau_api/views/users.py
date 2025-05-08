@@ -7,15 +7,19 @@ from rest_framework import status
 from django_ratelimit.decorators import ratelimit
 from rest_framework_simplejwt.tokens import RefreshToken
 from ..models import CustomUser
-from ..serializer import UserSerializer
+from ..serializer import UserSerializer, UserReadSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
 from ..permissions import IsStaffUser
 
+import logging
+import logging_config
+
+
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsStaffUser])
 @ratelimit(key='ip', rate='5/m', block=True)
 def list_users(request):
     # Verifica se o usuário tem permissão (apenas masters podem listar todos)
@@ -29,7 +33,7 @@ def list_users(request):
        # return Response({"error": "Permissão negada."}, status=status.HTTP_403_FORBIDDEN)
     
     users = CustomUser.objects.all()
-    serializer = UserSerializer(users, many=True)
+    serializer = UserReadSerializer(users, many=True)
     #logging.info("Usuário listou todos os usuários: '%s'" % request.user.id)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
