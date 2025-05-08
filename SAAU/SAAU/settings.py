@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'saau_api',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
+    'sensitive_info'
 ]
 
 REST_FRAMEWORK = {
@@ -131,8 +132,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'sensitive': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'sensitive.sqlite3',
     }
 }
+
+DATABASE_ROUTERS = ['saau_api.routers.SensitiveDataRouter']
 
 
 # Password validation

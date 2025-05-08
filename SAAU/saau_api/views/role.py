@@ -9,7 +9,7 @@ from ..models import Role
 from ..serializer import RoleSerializer
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsStaffUser])
+#@permission_classes([IsAuthenticated, IsStaffUser])
 def create_role(request):
     serializer = RoleSerializer(data=request.data)
     if serializer.is_valid():
