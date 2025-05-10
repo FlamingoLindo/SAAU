@@ -1,0 +1,49 @@
+{
+	"info": {
+		"_postman_id": "f0542d68-15d8-48b0-8c2e-9624fe534b76",
+		"name": "Role",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34715871",
+		"_collection_link": "https://crimson-sunset-793491.postman.co/workspace/SAAU-FABIANO~e33af0bd-5d86-4907-a848-3ca5b86b6b1c/collection/34715871-f0542d68-15d8-48b0-8c2e-9624fe534b76?action=share&source=collection_link&creator=34715871"
+	},
+	"item": [
+		{
+			"name": "Create Role",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"user\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/role/create/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"role",
+						"create",
+						""
+					]
+				},
+				"description": "This endpoint allows you to create a new role by sending an HTTP POST request to the specified URL. The request should include a JSON payload in the raw request body with the \"name\" parameter to specify the name of the role to be created.\n\n### Request Body\n\n- name (string, required): The name of the role to be created.\n    \n\n### Response\n\nThe response will include the details of the newly created role, including its unique identifier, name, and any other relevant information."
+			},
+			"response": []
+		}
+	]
+}
