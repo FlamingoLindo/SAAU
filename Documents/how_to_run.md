@@ -103,6 +103,11 @@ A seguir, exemplos de como usar as principais rotas para gerenciamento de usuár
 
     - **Método**: `PUT`
     - **Endpoint**: `/api/reset_password/`
+    - **Headers**:
+    ```sql
+    Authorization: Bearer <seu_token_JWT>
+    Content-Type: application/json
+    ```
     - **Body (JSON)**:
     ```json
     {
@@ -123,7 +128,11 @@ A seguir, exemplos de como usar as principais rotas para gerenciamento de usuár
 
     - **Método**: `DELETE`
     - **Endpoint**: `/api/users/delete_account/`
-
+    - **Headers**:
+    ```sql
+    Authorization: Bearer <seu_token_JWT>
+    Content-Type: application/json
+    ```
     - **Resposta de sucesso (204 No Content)**:
     ```json
     
