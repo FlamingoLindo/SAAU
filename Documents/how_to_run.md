@@ -7,22 +7,22 @@
     cd SAAU
     ```
 
-    2. Crie as migrações a partir dos seus models Django:
+    2. Crie as migrações a partir dos seus models Django (Apenas se os bancos de dado não estiverem criados):
     ```bash
     py manage.py makemigrations
     ```
 
-    3. Aplique as migrações no banco de dados padrão:
+    3. Aplique as migrações no banco de dados padrão (Apenas se os bancos de dado não estiverem criados):
     ```bash 
     py manage.py migrate
     ```
 
-    4. Aplique as migrações também no banco de dados sensitive:
+    4. Aplique as migrações também no banco de dados sensitive (Apenas se os bancos de dado não estiverem criados):
     ```bash 
     py manage.py migrate --database sensitive
     ```
 
-2. Aplique as migrações também no banco de dados sensitive (se configurado):Executando o servidor de desenvolvimento
+2. Executando o servidor de desenvolvimento:
 
 Para iniciar o servidor local e testar a API:
 ```bash
