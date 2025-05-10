@@ -233,4 +233,4 @@ def reset_password(request):
 
 ---
 
-Para detalhes de endpoints e exemplos de uso, consulte o arquivo `how_to_run.md`.
+Para detalhes de endpoints e exemplos de uso, consulte o arquivo [`how_to_run.md`](https://github.com/FlamingoLindo/SAAU/blob/main/Documents/how_to_run.md).

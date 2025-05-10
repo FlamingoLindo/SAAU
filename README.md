@@ -85,7 +85,7 @@ As senhas são armazenadas com algoritmos de **hash** + **salt**, e dados sensí
 - Apenas usuários com papel "master" podem criar papéis e acessar rotas administrativas.
 - Todas as operações sensíveis são registradas em log.
 
-Para detalhes técnicos e exemplos de código, consulte o arquivo `Documents/how_does_it_work.md`.
+Para detalhes técnicos e exemplos de código, consulte o arquivo [`Documents/how_does_it_work.md`](https://github.com/FlamingoLindo/SAAU/blob/main/Documents/how_does_it_work.md).
 
 ## Integrantes do Projeto
 
