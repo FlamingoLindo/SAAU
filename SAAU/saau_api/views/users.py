@@ -71,12 +71,12 @@ def delete_account(request):
     user = request.user
 
     # Master não pode se deletar
-    if user.role.name == 'master':
-        logging.warning("Tentativa de deletar conta master: %s", user.id)
-        return Response(
-            {"error": "Não é possível deletar uma conta master."},
-            status=status.HTTP_403_FORBIDDEN
-        )
+    # if user.role.name == 'master':
+    #     logging.warning("Tentativa de deletar conta master: %s", user.id)
+    #     return Response(
+    #         {"error": "Não é possível deletar uma conta master."},
+    #         status=status.HTTP_403_FORBIDDEN
+    #     )
 
     # Invalida token
     try:

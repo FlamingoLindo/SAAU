@@ -1,3 +1,0 @@
-python manage.py migrate --database sensitive
-
-usuário verificado (master) mostrar dados sem mascara e reais

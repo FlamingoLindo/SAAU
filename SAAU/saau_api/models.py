@@ -44,7 +44,7 @@ class CustomUser(AbstractUser):
     document = models.CharField(max_length=50, blank=False, null=False, unique=True)
     role = models.ForeignKey(Role,
                              on_delete=models.CASCADE,
-                             default=1, 
+                             default=2, 
                              related_name='users')
 
     created_at = models.DateTimeField(auto_now_add=True)

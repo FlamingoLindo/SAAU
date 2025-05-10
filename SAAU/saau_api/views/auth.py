@@ -130,22 +130,36 @@ def login(request):
 @permission_classes([IsAuthenticated])
 @ratelimit(key='ip', rate='5/m', block=True)
 def reset_password(request):
-    id = request.user.id
+    user = request.user
+
+    # 1) recupere o e-mail real a partir do token que está em user.email
     try:
-        user = CustomUser.objects.get(email=request.data['email'])
-    except CustomUser.DoesNotExist:
-        logging.warning("Erro ao fazer reset de senha: '%s'" % id)
-        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        mapping = EmailToken.objects.using('sensitive').get(token=user.email)
+    except EmailToken.DoesNotExist:
+        return Response({"error": "Mapeamento de e-mail não encontrado."},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    if user.check_password(request.data['old_password']):
-        if request.data['new_password'] != request.data['confirm_password']:
-            logging.warning("Tentativa de fazer reset de senha com senhas diferentes: '%s'" % user.id)
-            return Response({"error": "As senhas não coincidem."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user.set_password(request.data['new_password'])
-        user.save()
-        logging.info("Senha alterada com sucesso: '%s'" % user.id)
-        return Response({"message": "Senha alterada com sucesso."}, status=status.HTTP_200_OK)
+    raw_email = mapping.email_real
 
-    logging.warning("Tentativa de fazer reset de senha com credencias incorretas: '%s'" % user.id)
-    return Response({"error": "Credenciais incorretas."}, status=status.HTTP_401_UNAUTHORIZED)
+    # 2) agora use user diretamente em vez de buscar por e-mail
+    old_pw     = request.data.get('old_password')
+    new_pw     = request.data.get('new_password')
+    confirm_pw = request.data.get('confirm_password')
+
+    # 3) confira a senha antiga
+    if not user.check_password(old_pw):
+        return Response({"error": "Credenciais incorretas."},
+                        status=status.HTTP_401_UNAUTHORIZED)
+
+    # 4) valide confirmação
+    if new_pw != confirm_pw:
+        return Response({"error": "As senhas não coincidem."},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # 5) atualize a senha
+    user.set_password(new_pw)
+    user.save(update_fields=['password'])
+    logging.info("Senha alterada para o e-mail %s (usuario %s)", raw_email, user.id)
+
+    return Response({"message": "Senha alterada com sucesso."},
+                    status=status.HTTP_200_OK)
