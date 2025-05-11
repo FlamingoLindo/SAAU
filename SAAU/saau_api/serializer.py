@@ -10,6 +10,11 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = '__all__'
 
+# LOGIN
+class LoginSerializer(serializers.Serializer):
+    email    = serializers.EmailField()
+    password = serializers.CharField()
+
 # USER
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.SlugRelatedField(

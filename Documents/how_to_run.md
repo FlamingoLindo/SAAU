@@ -137,3 +137,20 @@ A seguir, exemplos de como usar as principais rotas para gerenciamento de usuár
     ```json
     
     ```
+
+## 4. Documentação interativa da API
+
+- **Swagger UI**  
+  - **Método**: `GET`  
+  - **Endpoint**: `http://127.0.0.1:8000/swagger/`  
+  - Navegue nessa URL para ver toda a sua API documentada com Swagger, testar os endpoints e visualizar esquemas de request/response.
+
+- **OpenAPI JSON**  
+  - **Método**: `GET`  
+  - **Endpoint**: `http://127.0.0.1:8000/swagger/?format=openapi`  
+  - Retorna o schema OpenAPI em formato JSON, útil para geração de clientes ou integração com outras ferramentas.
+
+- **ReDoc UI**  
+  - **Método**: `GET`  
+  - **Endpoint**: `http://127.0.0.1:8000/redoc/`  
+  - Uma alternativa ao Swagger UI, com navegação lateral para especificações mais longas.

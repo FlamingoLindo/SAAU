@@ -5,11 +5,14 @@ from rest_framework import status
 from django_ratelimit.decorators import ratelimit
 from rest_framework_simplejwt.tokens import RefreshToken
 from ..models import CustomUser
-from ..serializer import UserSerializer
+from ..serializer import UserSerializer, LoginSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 import uuid
 from sensitive_info.models import CPFToken, EmailToken, PhoneToken, BirthDateToken
@@ -30,6 +33,12 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
+@swagger_auto_schema(
+    method='post',
+    operation_summary="Criar novo usuário",
+    request_body=UserSerializer,        
+    responses={201: UserSerializer}     
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_user(request):
@@ -83,6 +92,26 @@ def create_user(request):
         "user": UserSerializer(user).data
     }, status=status.HTTP_201_CREATED)
 
+@swagger_auto_schema(
+    method='post',
+    operation_summary="Login de usuário",
+    request_body=LoginSerializer,
+    responses={
+        200: openapi.Response(
+            description="Tokens + dados do usuário",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'refresh': openapi.Schema(type=openapi.TYPE_STRING),
+                    'access':  openapi.Schema(type=openapi.TYPE_STRING),
+                    'user':    openapi.Schema(type=openapi.TYPE_OBJECT)
+                }
+            )
+        ),
+        401: "Credenciais incorretas",
+        404: "Usuário não encontrado"
+    }
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
@@ -126,6 +155,24 @@ def login(request):
         "user":    UserSerializer(user).data
     }, status=status.HTTP_200_OK)
 
+@swagger_auto_schema(
+    method='put',
+    operation_summary="Reset de senha do usuário logado",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'old_password':     openapi.Schema(type=openapi.TYPE_STRING),
+            'new_password':     openapi.Schema(type=openapi.TYPE_STRING),
+            'confirm_password': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+        required=['old_password','new_password','confirm_password']
+    ),
+    responses={
+        200: "Senha alterada com sucesso",
+        400: "As senhas não coincidem",
+        401: "Credenciais incorretas"
+    }
+)
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='ip', rate='5/m', block=True)

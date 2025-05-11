@@ -12,10 +12,18 @@ from ..models import CustomUser
 from ..serializer import UserReadSerializer
 from sensitive_info.models import CPFToken, EmailToken, PhoneToken, BirthDateToken
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 import logging
 import logging_config
 
 # LISTAGEM DE USUÁRIO (MÁSCARA)
+@swagger_auto_schema(
+    method='get',
+    operation_summary="Listar todos os usuários (apenas staff)",
+    responses={200: UserReadSerializer(many=True)}
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsStaffUser])
 @ratelimit(key='ip', rate='5/m', block=True)
@@ -27,6 +35,20 @@ def list_users(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 # DELETAR UM USUÁRIO ESCOLHIDO
+user_id_param = openapi.Parameter(
+    name='user_id',
+    in_=openapi.IN_PATH,
+    description="ID do usuário a ser deletado",
+    type=openapi.TYPE_INTEGER,
+    required=True
+)
+
+@swagger_auto_schema(
+    method='delete',
+    operation_summary="Deletar usuário por ID",
+    manual_parameters=[user_id_param],
+    responses={204: "Usuário deletado com sucesso", 403: "Permissão negada", 404: "Usuário não encontrado"}
+)
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='ip', rate='5/m', block=True)
@@ -64,6 +86,11 @@ def delete_user(request, user_id):
         return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
 # DELETAR CONTA DE USUÁRIO LOGADO
+@swagger_auto_schema(
+    method='delete',
+    operation_summary="Deletar própria conta",
+    responses={204: "Conta desativada com sucesso"}
+)
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='ip', rate='5/m', block=True)

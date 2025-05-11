@@ -5,6 +5,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from ..serializer import RoleSerializer
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+@swagger_auto_schema(
+    method='post',
+    operation_summary="Criar nova role",
+    request_body=RoleSerializer,
+    responses={201: RoleSerializer}
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsStaffUser])
 def create_role(request):
