@@ -62,11 +62,11 @@ Authorization: Bearer <token>
 ## Estrutura de Dados
 O sistema utiliza um modelo relacional baseado nas entidades:
 
-- **User**: dados pessoais como nome, e-mail, CPF, senha (hash), data de nascimento, etc.
+- **User**: Dados pessoais como nome, e-mail, CPF, senha (hash), data de nascimento, etc.
 
-- **Role**: define o papel do usuário no sistema, como *master* ou *cliente*.
+- **Role**: Define o papel do usuário no sistema, como *master* ou *cliente*.
 
-- **Address**: armazena endereço do usuário, opcional no cadastro.
+- **Address**: Armazena endereço do usuário, opcional no cadastro.
 
 As senhas são armazenadas com algoritmos de **hash** + **salt**, e dados sensíveis são anonimizados ou pseudoanonimizados para garantir conformidade com a LGPD.
 
