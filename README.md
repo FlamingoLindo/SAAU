@@ -87,12 +87,15 @@ As senhas são armazenadas com algoritmos de **hash** + **salt**, e dados sensí
 
 Para detalhes técnicos e exemplos de código, consulte o arquivo [`Documents/how_does_it_work.md`](https://github.com/FlamingoLindo/SAAU/blob/main/Documents/how_does_it_work.md).
 
+Para saber como rodar a aplicação, consulte o arquivo [`Documents/how_to_run.md`](https://github.com/FlamingoLindo/SAAU/blob/main/Documents/how_to_run.md).
+
 ## Integrantes do Projeto
 
-- [Vitor Antunes Ferreira](https://github.com/FlamingoLindo)
+- [Vitor Antunes Ferreira](https://github.com/FlamingoLindo) RGM: 11221100950
 
-- [Lucas Lizot Mori](https://github.com/LLizot)
+- [Lucas Lizot Mori](https://github.com/LLizot) RGM: 11212100125
 
-- [Carlos Henrique](https://github.com/carloosz)
+- [Carlos Henrique](https://github.com/carloosz) RGM: 11221504686
 
-- [Bryan Henrique de Oliveira Serrão](https://github.com/bryanhenriquek)
+- [Bryan Henrique de Oliveira Serrão](https://github.com/bryanhenriquek) RGM: 11221101589
+  
