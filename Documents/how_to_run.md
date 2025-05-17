@@ -154,3 +154,12 @@ A seguir, exemplos de como usar as principais rotas para gerenciamento de usuár
   - **Método**: `GET`  
   - **Endpoint**: `http://127.0.0.1:8000/redoc/`  
   - Uma alternativa ao Swagger UI, com navegação lateral para especificações mais longas.
+
+## 5. Teste online do SAAU
+
+O projeto está rodando em um droplet da Digital Ocean e pode ser testado publicamente:
+
+- **API online:** http://64.227.8.209:8000/
+- **Documentação interativa (ReDoc):** http://64.227.8.209:8000/redoc/
+
+Você pode testar todos os endpoints diretamente pelo link acima, utilizando ferramentas como Postman, Insomnia.
