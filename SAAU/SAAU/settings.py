@@ -108,7 +108,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://projetofinalfabiano.netlify.app/",
+    "https://projetofinalfabiano.netlify.app",
 ]
 
 ROOT_URLCONF = 'SAAU.urls'
