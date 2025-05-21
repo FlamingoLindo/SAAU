@@ -79,3 +79,27 @@ class Address(models.Model):
         ordering = ['id_address']
         verbose_name = 'Address'
         verbose_name_plural = 'Addresses'
+
+# # ENTIDADE CARTÃO DE CRÉDITO (uso futuro)
+# class CreditCard(models.Model):
+#     id_card = models.AutoField(primary_key=True)
+#     cardholder_name = models.CharField(max_length=100, blank=False, null=False)
+#     card_number = models.CharField(max_length=20, blank=False, null=False, unique=True)
+#     expiration_date = models.CharField(max_length=7, blank=False, null=False)  # formato: MM/YYYY
+#     cvv = models.CharField(max_length=4, blank=False, null=False)
+#     user = models.ForeignKey(
+#         CustomUser,
+#         on_delete=models.CASCADE,
+#         related_name='credit_cards'
+#     )
+# 
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+# 
+#     def __str__(self):
+#         return f"{self.cardholder_name} - ****{self.card_number[-4:]}"
+# 
+#     class Meta:
+#         ordering = ['id_card']
+#         verbose_name = 'Credit Card'
+#         verbose_name_plural = 'Credit Cards'
