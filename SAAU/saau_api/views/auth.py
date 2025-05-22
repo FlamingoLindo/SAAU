@@ -148,6 +148,8 @@ def login(request):
     user.save(update_fields=['last_login'])
 
     refresh = RefreshToken.for_user(user)
+    refresh['name'] = user.name
+    refresh['role'] = user.role.name
     logging.info("Usuario logado com sucesso: %s", user.id)
     return Response({
         "refresh": str(refresh),
