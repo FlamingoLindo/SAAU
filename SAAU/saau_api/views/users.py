@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
 from ..permissions import IsStaffUser
 from ..models import CustomUser
@@ -34,6 +34,24 @@ def list_users(request):
     logging.info("Todos os usuarios listados por: '%s'" % request.user.id)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+# LISTAGEM DE USUÁRIO
+@swagger_auto_schema(
+    method='get',
+    operation_summary="Listar usuário por ID",
+    responses={200: UserReadSerializer()}
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user(request, user_id):
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        serializer = UserReadSerializer(user)
+        logging.info("Usuario '%s' lido por: '%s'" % (user_id, request.user.id))
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        logging.warning("Tentativa de ler usuario inexistente: '%s'" % user_id)
+        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+    
 # DELETAR UM USUÁRIO ESCOLHIDO
 user_id_param = openapi.Parameter(
     name='user_id',
