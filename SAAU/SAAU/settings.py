@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [config('DIGI_IP'), 'projetofinalfabiano.netlify.app', 'calendars-senator-anaheim-pill.trycloudflare.com']
+ALLOWED_HOSTS = [config('DIGI_IP'), 'projetofinalfabiano.netlify.app', 'confirmed-committed-chosen-oven.trycloudflare.com']
 
 
 # Application definition
@@ -110,7 +110,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://projetofinalfabiano.netlify.app",
     "http://localhost:3000",
-    "https://calendars-senator-anaheim-pill.trycloudflare.com",
+    "https://confirmed-committed-chosen-oven.trycloudflare.com",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
