@@ -110,7 +110,10 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://projetofinalfabiano.netlify.app",
     "http://localhost:3000",
+    "https://calendars-senator-anaheim-pill.trycloudflare.com",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'SAAU.urls'
 
