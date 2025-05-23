@@ -167,16 +167,36 @@ def delete_account(request):
         404: "Usuário não encontrado"
     }   
 )
+
+@swagger_auto_schema(
+    method='put',
+    operation_summary="Alterar status do usuário",
+    responses={
+        200: openapi.Response(
+            description="Status do usuário alterado com sucesso",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                    'is_active': openapi.Schema(type=openapi.TYPE_BOOLEAN)
+                }
+            )
+        ),
+        404: "Usuário não encontrado"
+    }   
+)
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def change_user_status(request, pk):
     try:
         user = CustomUser.objects.get(pk=pk)
     except CustomUser.DoesNotExist:
+        logging.warning("Tentativa de alterar status de usuario inexistente: '%s'" % pk)
         return Response({'detail': 'Usuário não existe.'}, status=status.HTTP_404_NOT_FOUND)
 
     user.is_active = not user.is_active
     user.save(update_fields=['is_active'])
+    logging.info("Status do usuario '%s' alterado para: %s" % (user.id, user.is_active))
 
     return Response({
         'id': user.id,
