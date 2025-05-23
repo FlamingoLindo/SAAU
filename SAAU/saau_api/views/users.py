@@ -29,7 +29,7 @@ import logging_config
 @ratelimit(key='ip', rate='5/m', block=True)
 def list_users(request):
 
-    users = CustomUser.objects.all()
+    users = CustomUser.objects.exclude(pk=request.user.pk)
     serializer = UserReadSerializer(users, many=True)
     logging.info("Todos os usuarios listados por: '%s'" % request.user.id)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -148,3 +148,37 @@ def delete_account(request):
 
     # 6) retornar sem conteúdo
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+# ALTERAR STATUS DO USUÁRIO (ATIVAR/DESATIVAR)
+@swagger_auto_schema(
+    method='put',
+    operation_summary="Alterar status do usuário",
+    responses={
+        200: openapi.Response(
+            description="Status do usuário alterado com sucesso",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                    'is_active': openapi.Schema(type=openapi.TYPE_BOOLEAN)
+                }
+            )
+        ),
+        404: "Usuário não encontrado"
+    }   
+)
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def change_user_status(request, pk):
+    try:
+        user = CustomUser.objects.get(pk=pk)
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'Usuário não existe.'}, status=status.HTTP_404_NOT_FOUND)
+
+    user.is_active = not user.is_active
+    user.save(update_fields=['is_active'])
+
+    return Response({
+        'id': user.id,
+        'is_active': user.is_active
+    }, status=status.HTTP_200_OK)
