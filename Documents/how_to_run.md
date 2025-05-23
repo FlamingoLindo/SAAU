@@ -163,3 +163,84 @@ O projeto está rodando em um droplet da Digital Ocean e pode ser testado public
 - **Documentação interativa (ReDoc):** http://64.227.8.209:8000/redoc/
 
 Você pode testar todos os endpoints diretamente pelo link acima, utilizando ferramentas como Postman, Insomnia.
+
+## Endpoints da API
+
+| Método | Rota                                   | Descrição                                                      | Autenticação |
+| ------ | -------------------------------------- | -------------------------------------------------------------- | ------------ |
+| POST   | `/api/token/`                         | Obtenção de token JWT (login via SimpleJWT)                    | ❌           |
+| POST   | `/api/token/refresh/`                 | Refresh do token JWT                                           | ❌           |
+| POST   | `/api/login/`                         | Login customizado de usuário                                   | ❌           |
+| POST   | `/api/users/create/`                  | Criação de um usuário                                          | ❌           |
+| POST   | `/api/role/create/`                   | Criação de um papel                                            | ✅           |
+| PUT    | `/api/reset_password/`                | Redefinição de senha do usuário logado                         | ✅           |
+| GET    | `/api/users/listUser/`                | Listagem de usuários (apenas staff/master, dados mascarados)   | ✅           |
+| DELETE | `/api/users/deleteUser/<id>/`         | Exclusão de um usuário específico (master ou o próprio)        | ✅           |
+| DELETE | `/api/users/delete_account/`          | Exclusão da própria conta do usuário logado                    | ✅           |
+| GET    | `/api/users/<id>/`                    | Detalhes de um usuário específico                              | ✅           |
+| POST   | `/api/users/<pk>/toggle-active/`      | Ativa/desativa usuário (altera status ativo)                   | ✅           |
+
+## Teste Online
+
+O SAAU está disponível para testes públicos em um droplet da Digital Ocean:
+- **API online:** http://64.227.8.209:8000/
+- **Documentação interativa (ReDoc):** http://64.227.8.209:8000/redoc/
+
+Você pode testar todos os endpoints diretamente pelo link acima, utilizando ferramentas como Postman, Insomnia ou a interface web ReDoc.
+
+## Segurança, Pseudoanonimização e LGPD
+
+- Dados sensíveis (CPF, e-mail, telefone, data de nascimento) são armazenados em um banco separado (`sensitive.sqlite3`) usando models específicos do app `sensitive_info`.
+- Esses dados são referenciados por tokens UUID na tabela principal de usuários, garantindo que informações sensíveis nunca fiquem expostas diretamente.
+- Relações cruzadas entre bancos são bloqueadas por um router customizado.
+- Todas as operações sensíveis são registradas em log.
+- O sistema é totalmente aderente à LGPD.
+
+## Configuração de Bancos de Dados e JWT
+
+No arquivo `settings.py`, o projeto utiliza múltiplos bancos de dados e autenticação JWT:
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'sensitive': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'sensitive.sqlite3',
+    }
+}
+DATABASE_ROUTERS = ['saau_api.routers.SensitiveDataRouter']
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    # ...
+}
+```
+
+## Models de Dados Sensíveis
+
+Os modelos do app `sensitive_info` armazenam dados sensíveis de forma pseudoanonimizada:
+```python
+class CPFToken(models.Model):
+    token = models.UUIDField(primary_key=True, editable=False)
+    cpf_real = models.CharField(max_length=11, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+# ... EmailToken, PhoneToken, BirthDateToken ...
+```
+
+## Fluxo de Cadastro e Exclusão
+
+- No cadastro, dados sensíveis são salvos no banco `sensitive` e substituídos por tokens no usuário.
+- Ao listar usuários, dados sensíveis são mascarados.
+- Ao excluir a conta, todos os dados sensíveis são removidos do banco `sensitive`.

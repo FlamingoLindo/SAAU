@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views.auth import MyTokenObtainPairView, create_user, login, reset_password
 from .views.role import create_role
-from .views.users import list_users, delete_user, delete_account, get_user
+from .views.users import list_users, delete_user, delete_account, get_user, change_user_status
 
 urlpatterns = [
     # Auth URLs
@@ -18,6 +18,7 @@ urlpatterns = [
     path('users/deleteUser/<int:user_id>/', delete_user, name='delete_user'),
     path('users/delete_account/', delete_account, name='delete_account'),
     path('users/<int:user_id>/', get_user, name='get_user'),
+    path('users/<int:pk>/toggle-active/', change_user_status, name='change-user-status'),
 
     # Role URLs
     path('role/create/', create_role, name='create_role'),
