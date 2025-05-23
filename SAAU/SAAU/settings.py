@@ -29,8 +29,11 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [config('DIGI_IP'), 'projetofinalfabiano.netlify.app', 'ago-henderson-nashville-tool.trycloudflare.com']
-
+ALLOWED_HOSTS = [
+    config('DIGI_IP'),
+    'projetofinalfabiano.netlify.app',
+    'ago-henderson-nashville-tool.trycloudflare.com',
+]
 
 # Application definition
 
