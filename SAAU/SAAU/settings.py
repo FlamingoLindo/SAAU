@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [config('DIGI_IP')]
+ALLOWED_HOSTS = [config('DIGI_IP'), 'projetofinalfabiano.netlify.app']
 
 
 # Application definition
